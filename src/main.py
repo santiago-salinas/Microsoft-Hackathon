@@ -2,12 +2,15 @@ import re
 import cv2
 import simplelpr
 import matplotlib.colors as mcolors
-from api import findPlateState
+from api import PlateDatabase
 import time
 
 video_stream_id = 0
 plateRegex = r'[A-Za-z]{3}\s+[\d]{4}'
 
+PlateDatabase = PlateDatabase()
+findPlateState = PlateDatabase.findPlateState
+createAlert = PlateDatabase.createAlert
 
 # Engine setup for simplelpr
 setupP = simplelpr.EngineSetupParms()
@@ -35,6 +38,8 @@ def click_event(event, x, y, flags, param):
         for text, (left, top, width, height) in detected_texts:
             if left < x < left + width and top < y < top + height:
                 print(f"Clicked on plate: {text}")
+                normalized_code = text.replace(' ', '')
+                createAlert(normalized_code)
 
 
 # Function to process each video frame
