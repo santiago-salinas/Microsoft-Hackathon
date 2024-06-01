@@ -18,6 +18,7 @@ proc.cropToPlateRegionEnabled = True
 # Array to store detected texts
 detected_texts = []
 
+
 def get_color_from_string(color_name):
     # Get the RGB values using matplotlib
     rgb = mcolors.to_rgb(color_name)
@@ -27,6 +28,7 @@ def get_color_from_string(color_name):
     bgr = (rgb[2], rgb[1], rgb[0])
     return bgr
 
+
 # Function to handle mouse click events
 def click_event(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
@@ -34,10 +36,11 @@ def click_event(event, x, y, flags, param):
             if left < x < left + width and top < y < top + height:
                 print(f"Clicked on plate: {text}")
 
+
 # Function to process each video frame
 def process_frame(frame):
     # global detected_texts
-    
+
     # Convert the OpenCV image (BGR) to simplelpr compatible format (RGB)
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     cds = proc.analyze(rgb_frame)
@@ -57,15 +60,19 @@ def process_frame(frame):
                 normalized_code = m.text.replace(' ', '')
 
                 findResult = findPlateState(normalized_code)
-                color = (51,250, 250)
-                if findResult :
+                color = (51, 250, 250)
+                comments = ""
+
+                if findResult:
                     color = findResult["color"]
+                    comments = findResult['level']
 
                 # Overlay a rectangle around the plate
                 cv2.rectangle(frame, (left, top), (left + width, top + height), color, 2)
 
                 # Overlay plate text
-                cv2.putText(frame, f"Plate: {m.text}", (left, top - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
+                cv2.putText(frame, comments, (left, top + height + 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
+                cv2.putText(frame, f"Plate: {m.text} ", (left, top - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
 
                 # Store the detected text and its bounding box
                 # detected_texts.append((m.text, (left, top, width, height)))
