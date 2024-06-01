@@ -44,7 +44,7 @@ def process_frame(frame):
                 normalized_code = m.text.replace(' ', '')
 
                 findResult = findPlateState(normalized_code)
-                color = (0, 255, 0)
+                color = (0, 0, 255)
                 if findResult is not None:
                     color = get_color_from_string(findResult["color"])
 
@@ -52,7 +52,7 @@ def process_frame(frame):
                 cv2.rectangle(frame, (left, top), (left + width, top + height), color, 2)
 
                 # Overlay plate text
-                cv2.putText(frame, f"Plate: {m.text}", (left, top - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                cv2.putText(frame, f"Plate: {m.text}", (left, top - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
     # Display the processed frame
     cv2.imshow("Video", frame)
