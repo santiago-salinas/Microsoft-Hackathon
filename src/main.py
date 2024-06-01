@@ -69,7 +69,7 @@ def process_frame(frame):
                 cv2.rectangle(frame, (left, top), (left + width, top + height), color, 2)
 
                 # Overlay plate text
-                cv2.putText(frame, f"Plate: {m.text}", (left, top - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+                cv2.putText(frame, f"Plate: {m.text}", (left, top - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
 
                 # Store the detected text and its bounding box
                 detected_texts.append((m.text, (left, top, width, height)))
