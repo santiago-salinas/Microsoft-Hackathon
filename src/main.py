@@ -4,6 +4,7 @@ import simplelpr
 import matplotlib.colors as mcolors
 from src.api import findPlateState
 
+video_stream_id = 0
 plateRegex = r'[A-Za-z]{3}\s+[\d]{4}'
 
 # Engine setup for simplelpr
@@ -42,11 +43,11 @@ def process_frame(frame):
                 height = m.boundingBox.height
 
                 normalized_code = m.text.replace(' ', '')
-
+                print(normalized_code)
                 findResult = findPlateState(normalized_code)
                 color = (0, 0, 255)
                 if findResult is not None:
-                    color = get_color_from_string(findResult["color"])
+                    color = findResult["color"]
 
                 # Overlay a rectangle around the plate
                 cv2.rectangle(frame, (left, top), (left + width, top + height), color, 2)
@@ -60,7 +61,7 @@ def process_frame(frame):
 
 
 # Capture video from the notebook camera
-cap = cv2.VideoCapture(2)
+cap = cv2.VideoCapture(video_stream_id)
 
 while True:
     ret, frame = cap.read()

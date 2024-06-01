@@ -1,7 +1,7 @@
 safe = "SAFE"
 dangerous = "DANGEROUS"
-colorGreen = "green"
-colorRed = "red"
+colorGreen = (161, 221, 112)
+colorRed = (238, 78, 78)
 
 database = [
     {"code": "ZME2015", "level": dangerous, "color": colorRed},
