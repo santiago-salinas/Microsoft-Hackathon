@@ -5,7 +5,7 @@ colorRed = (238, 78, 78)
 
 database = [
     {"code": "ZME2015", "level": dangerous, "color": colorRed},
-    {"code": "DAA76", "level": dangerous, "color": colorRed},
+    {"code": "OAA7644", "level": dangerous, "color": colorRed},
     {"code": "SCW2648", "level": safe, "color": colorGreen},
 ]
 

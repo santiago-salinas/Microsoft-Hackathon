@@ -3,9 +3,11 @@ import cv2
 import simplelpr
 import matplotlib.colors as mcolors
 from api import findPlateState
+import time
 
 video_stream_id = 0
 plateRegex = r'[A-Za-z]{3}\s+[\d]{4}'
+
 
 # Engine setup for simplelpr
 setupP = simplelpr.EngineSetupParms()
@@ -34,6 +36,7 @@ def click_event(event, x, y, flags, param):
             if left < x < left + width and top < y < top + height:
                 print(f"Clicked on plate: {text}")
 
+
 # Function to process each video frame
 def process_frame(frame):
     # global detected_texts
@@ -42,7 +45,7 @@ def process_frame(frame):
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     cds = proc.analyze(rgb_frame)
 
-    # detected_texts = []  # Clear the detected texts array
+    
 
     # Process detected plates
     for cd in cds:
@@ -58,10 +61,10 @@ def process_frame(frame):
 
                 findResult = findPlateState(normalized_code)
                 color = (0, 0, 255)
-                if findResult is not None:
+                if findResult:
                     color = findResult["color"]
 
-                print(color)
+                # print(color)
                 # Overlay a rectangle around the plate
                 cv2.rectangle(frame, (left, top), (left + width, top + height), color, 2)
 
@@ -69,7 +72,7 @@ def process_frame(frame):
                 cv2.putText(frame, f"Plate: {m.text}", (left, top - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
                 # Store the detected text and its bounding box
-                # detected_texts.append((m.text, (left, top, width, height)))
+                detected_texts.append((m.text, (left, top, width, height)))
 
     # Display the processed frame
     cv2.imshow("Video", frame)
@@ -84,6 +87,8 @@ while True:
     if not ret:
         break
 
+    if len(detected_texts) > 10:
+        detected_texts = []
     # Process the video frame
     process_frame(frame)
 
