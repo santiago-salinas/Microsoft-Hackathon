@@ -1,10 +1,10 @@
 safe = "SAFE"
 dangerous = "DANGEROUS"
 colorGreen = (161, 221, 112)
-colorRed = (238, 78, 78)
+colorRed = (0, 0, 255)
 
 database = [
-    {"code": "ZME2015", "level": dangerous, "color": colorRed},
+    {"code": "ZME2015", "level": safe, "color": colorGreen},
     {"code": "DAA76", "level": dangerous, "color": colorRed},
     {"code": "SCW2648", "level": safe, "color": colorGreen},
 ]
