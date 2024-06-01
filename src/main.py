@@ -36,13 +36,13 @@ def click_event(event, x, y, flags, param):
 
 # Function to process each video frame
 def process_frame(frame):
-    global detected_texts
+    # global detected_texts
     
     # Convert the OpenCV image (BGR) to simplelpr compatible format (RGB)
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     cds = proc.analyze(rgb_frame)
 
-    detected_texts = []  # Clear the detected texts array
+    # detected_texts = []  # Clear the detected texts array
 
     # Process detected plates
     for cd in cds:
@@ -55,12 +55,13 @@ def process_frame(frame):
                 height = m.boundingBox.height
 
                 normalized_code = m.text.replace(' ', '')
-                print(normalized_code)
+
                 findResult = findPlateState(normalized_code)
                 color = (0, 0, 255)
                 if findResult is not None:
                     color = findResult["color"]
 
+                print(color)
                 # Overlay a rectangle around the plate
                 cv2.rectangle(frame, (left, top), (left + width, top + height), color, 2)
 
@@ -68,7 +69,7 @@ def process_frame(frame):
                 cv2.putText(frame, f"Plate: {m.text}", (left, top - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
                 # Store the detected text and its bounding box
-                detected_texts.append((m.text, (left, top, width, height)))
+                # detected_texts.append((m.text, (left, top, width, height)))
 
     # Display the processed frame
     cv2.imshow("Video", frame)
