@@ -25,16 +25,11 @@ class PlateDatabase:
         return False
 
     def createAlert(self, code: str):
-        print(self.database)
-        print(f"Creating alert for plate: {code}")
         result = self.findPlateState(code)
-        print(result)
         if result is None:
-            print("Plate not found in database")
             self.database.append({"code": code, "color": colorRed, "level": dangerous})
         else:
-            print("Plate found in database")
             self.removePlateState(code)
             self.database.append({"code": code, "color": colorRed, "level": dangerous})
-        print(self.database)
+
 

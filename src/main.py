@@ -45,10 +45,22 @@ def click_event(event, x, y, flags, param):
                 print(f"Clicked on plate: {text}")
                 normalized_code = text.replace(' ', '')
                 createAlert(normalized_code)
+                global tts_thread_active
+                if not tts_thread_active:
+                    tts_thread = threading.Thread(target=announce_report)
+                    tts_thread.start()
+                    tts_thread_active = True
 
 def announce_warning():
     global tts_thread_active
-    engine.say("Beware of driver ahead")
+    engine.say("Cuidado con el conductor de delante, este vehículo ha sido reportado como peligroso")
+    engine.runAndWait()
+    time.sleep(5)
+    tts_thread_active = False
+
+def announce_report():
+    global tts_thread_active
+    engine.say("Reportado a las autoridades")
     engine.runAndWait()
     time.sleep(5)
     tts_thread_active = False
