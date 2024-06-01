@@ -2,7 +2,7 @@ import re
 import cv2
 import simplelpr
 import matplotlib.colors as mcolors
-from src.api import findPlateState
+from api import findPlateState
 
 video_stream_id = 0
 plateRegex = r'[A-Za-z]{3}\s+[\d]{4}'
@@ -15,6 +15,8 @@ proc = eng.createProcessor()
 proc.plateRegionDetectionEnabled = True
 proc.cropToPlateRegionEnabled = True
 
+# Array to store detected texts
+detected_texts = []
 
 def get_color_from_string(color_name):
     # Get the RGB values using matplotlib
@@ -25,12 +27,22 @@ def get_color_from_string(color_name):
     bgr = (rgb[2], rgb[1], rgb[0])
     return bgr
 
+# Function to handle mouse click events
+def click_event(event, x, y, flags, param):
+    if event == cv2.EVENT_LBUTTONDOWN:
+        for text, (left, top, width, height) in detected_texts:
+            if left < x < left + width and top < y < top + height:
+                print(f"Clicked on plate: {text}")
 
 # Function to process each video frame
 def process_frame(frame):
+    global detected_texts
+    
     # Convert the OpenCV image (BGR) to simplelpr compatible format (RGB)
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     cds = proc.analyze(rgb_frame)
+
+    detected_texts = []  # Clear the detected texts array
 
     # Process detected plates
     for cd in cds:
@@ -55,6 +67,9 @@ def process_frame(frame):
                 # Overlay plate text
                 cv2.putText(frame, f"Plate: {m.text}", (left, top - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
+                # Store the detected text and its bounding box
+                detected_texts.append((m.text, (left, top, width, height)))
+
     # Display the processed frame
     cv2.imshow("Video", frame)
     cv2.waitKey(1)
@@ -70,6 +85,9 @@ while True:
 
     # Process the video frame
     process_frame(frame)
+
+    # Set mouse callback function
+    cv2.setMouseCallback("Video", click_event)
 
     # Exit the loop by pressing 'q'
     if cv2.waitKey(1) & 0xFF == ord('q'):
