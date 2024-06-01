@@ -2,8 +2,10 @@ import re
 import cv2
 import simplelpr
 import matplotlib.colors as mcolors
+import pyttsx3
 from api import PlateDatabase
 import time
+import threading
 
 video_stream_id = 0
 plateRegex = r'[A-Za-z]{3}\s+[\d]{4}'
@@ -19,6 +21,9 @@ eng = simplelpr.SimpleLPR(setupP)
 proc = eng.createProcessor()
 proc.plateRegionDetectionEnabled = True
 proc.cropToPlateRegionEnabled = True
+
+# Text-to-Speech engine
+engine = pyttsx3.init()
 
 # Array to store detected texts
 detected_texts = []
@@ -41,16 +46,24 @@ def click_event(event, x, y, flags, param):
                 normalized_code = text.replace(' ', '')
                 createAlert(normalized_code)
 
+def announce_warning():
+    global tts_thread_active
+    engine.say("Beware of driver ahead")
+    engine.runAndWait()
+    time.sleep(5)
+    tts_thread_active = False
+
+
+# Global variable to track if the thread is active
+tts_thread_active = False
 
 # Function to process each video frame
 def process_frame(frame):
-    # global detected_texts
-    
     # Convert the OpenCV image (BGR) to simplelpr compatible format (RGB)
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     cds = proc.analyze(rgb_frame)
 
-    
+    global detected_texts
 
     # Process detected plates
     for cd in cds:
@@ -68,8 +81,13 @@ def process_frame(frame):
                 color = (0, 0, 255)
                 if findResult:
                     color = findResult["color"]
+                    # Check if the thread is active before starting
+                    global tts_thread_active
+                    if color == (0, 0, 255) and not tts_thread_active:
+                        tts_thread = threading.Thread(target=announce_warning)
+                        tts_thread.start()
+                        tts_thread_active = True
 
-                # print(color)
                 # Overlay a rectangle around the plate
                 cv2.rectangle(frame, (left, top), (left + width, top + height), color, 2)
 
@@ -82,7 +100,6 @@ def process_frame(frame):
     # Display the processed frame
     cv2.imshow("Video", frame)
     cv2.waitKey(1)
-
 
 # Capture video from the notebook camera
 cap = cv2.VideoCapture(video_stream_id)
